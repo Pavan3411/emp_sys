@@ -100,7 +100,7 @@ const AdminDashboard = () => {
     const token = localStorage.getItem('token')
     setLoading(true)
     axios
-      .get('http://localhost:7001/api/admin/employees', {
+      .get('https://emp-sys-server.onrender/api/admin/employees', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -186,7 +186,7 @@ const AdminDashboard = () => {
       // logic to update employee by id
       axios
         .put(
-          `http://localhost:7001/api/admin/employees/${state.editingId}`,
+          `https://emp-sys-server.onrender/api/admin/employees/${state.editingId}`,
           data,
           {
             headers: {
@@ -209,7 +209,7 @@ const AdminDashboard = () => {
     } else {
       // logic to create new employee
       axios
-        .post('http://localhost:7001/api/admin/employees', data, {
+        .post('https://emp-sys-server.onrender/api/admin/employees', data, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -230,7 +230,7 @@ const AdminDashboard = () => {
   const handleDelete = (id) => {
     const token = localStorage.getItem('token')
     axios
-      .delete(`http://localhost:7001/api/admin/employees/${id}`, {
+      .delete(`https://emp-sys-server.onrender/api/admin/employees/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
