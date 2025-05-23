@@ -12,7 +12,6 @@ const {
 //   getEmployeeByEmail
 } = require('../controllers/employeeController');
 
-// Admin Dashboard
 router.get('/dashboard', authMiddleware, allowedRoles('admin'), getAdmins);
 
 // Admin Employee Management Routes
