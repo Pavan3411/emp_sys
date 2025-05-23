@@ -15,7 +15,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try{
-      const res = await axios.post('http://localhost:7001/api/auth/login', { email, password });
+      const res = await axios.post('https://emp-sys-server.onrender.com/api/auth/login', { email, password });
       login(res.data.user, res.data.token);
       if(res.data.user.role === 'admin'){
         navigate('/admin');
