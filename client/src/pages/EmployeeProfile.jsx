@@ -31,7 +31,7 @@ console.log('Token being sent:', token);
     if (user?.role === 'employee' && user?._id) {
       console.log('Fetching employee with ID:', user._id);
       axios
-        .get(`http://localhost:7001/api/employees/${user._id}`,{
+        .get(`https://emp-sys-server.onrender.com/api/employees/${user._id}`,{
           headers: {
             Authorization: `Bearer ${token}`
           }
