@@ -42,7 +42,7 @@ import 'react-toastify/dist/ReactToastify.css'
 const initialForm = {
   name: '',
   email: '',
-  role: '',
+  location: '',
   doj: '',
   salary: '',
   age: '',
@@ -71,7 +71,7 @@ const reducer = (state, action) => {
 const employeeSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   email: z.string().email('Invalid email'),
-  role: z.string().min(1, 'Role is required'),
+  location:z.string().min(1, 'Location is required'),
   department: z.string().min(1, 'Department is required'),
   salary: z.union([z.string(), z.number()]).transform(val => Number(val)),
   age: z.union([z.string(), z.number()])
@@ -100,13 +100,14 @@ const AdminDashboard = () => {
     const token = localStorage.getItem('token')
     setLoading(true)
     axios
-      .get('https://emp-sys-server.onrender.com/api/admin/employees', {
+      .get('http://localhost:7001/api/admin/employees', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
       .then((res) => {
         setEmployees(res.data)
+        console.log("employees: ", res.data)
         setError(null)
       })
       .catch((err) => {
@@ -185,7 +186,7 @@ const AdminDashboard = () => {
       // logic to update employee by id
       axios
         .put(
-          `https://emp-sys-server.onrender.com/api/admin/employees/${state.editingId}`,
+          `http://localhost:7001/api/admin/employees/${state.editingId}`,
           data,
           {
             headers: {
@@ -208,7 +209,7 @@ const AdminDashboard = () => {
     } else {
       // logic to create new employee
       axios
-        .post('https://emp-sys-server.onrender.com/api/admin/employees', data, {
+        .post('http://localhost:7001/api/admin/employees', data, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -229,7 +230,7 @@ const AdminDashboard = () => {
   const handleDelete = (id) => {
     const token = localStorage.getItem('token')
     axios
-      .delete(`https://emp-sys-server.onrender.com/api/admin/employees/${id}`, {
+      .delete(`http://localhost:7001/api/admin/employees/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -384,9 +385,9 @@ const AdminDashboard = () => {
                             fontWeight={600}
                             color="text.secondary"
                           >
-                            Role:
+                            Location
                           </Box>{' '}
-                          {emp.role}
+                          {emp.location}
                         </Typography>
                         <Typography variant="body2">
                           <Box
@@ -489,7 +490,7 @@ const AdminDashboard = () => {
                         <b>Email</b>
                       </TableCell>
                       <TableCell>
-                        <b>Role</b>
+                        <b>Location</b>
                       </TableCell>
                       <TableCell>
                         <b>Department</b>
@@ -516,7 +517,7 @@ const AdminDashboard = () => {
                       <TableRow key={emp._id || emp.id || emp.email}>
                         <TableCell>{emp.name}</TableCell>
                         <TableCell>{emp.email}</TableCell>
-                        <TableCell>{emp.role}</TableCell>
+                        <TableCell>{emp.location}</TableCell>
                         <TableCell>{emp.department}</TableCell>
                         <TableCell>₹{emp.salary}</TableCell>
                         <TableCell>{emp.age}</TableCell>
@@ -605,19 +606,19 @@ const AdminDashboard = () => {
                     }}
                   />
                   <TextField
-                    label="Role"
+                    label="Location"
                     fullWidth
-                    error={!!errors.role}
-                    helperText={errors.role?.[0]}
-                    value={state.form.role}
+                    error={!!errors.location}
+                    helperText={errors.location?.[0]}
+                    value={state.form.location}
                     onChange={(e) => {
                       dispatch({
                         type: 'UPDATE_FIELD',
-                        field: 'role',
+                        field: 'location',
                         value: e.target.value,
                       })
-                      if (errors.role)
-                        setErrors((prev) => ({ ...prev, role: undefined }))
+                      if (errors.location)
+                        setErrors((prev) => ({ ...prev, location: undefined }))
                     }}
                   />
                   <TextField
@@ -711,6 +712,7 @@ const AdminDashboard = () => {
                         setErrors((prev) => ({ ...prev, doj: undefined }))
                     }}
                   />
+
                 </Box>
               </DialogContent>
               <DialogActions>
