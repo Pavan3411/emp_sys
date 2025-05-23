@@ -7,21 +7,26 @@ const authRoutes = require('./routes/authRoutes');
 const employeeRoutes = require('./routes/employeeRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 
-// Middlewares
-app.use(cors());
-app.use(express.json());
-
 // DB Connection
 connectDb();
 
+// ✅ CORS Setup
+app.use(cors({
+  origin: 'https://emp-sys-client.onrender.com', // your frontend URL
+  credentials: true
+}));
+
+app.options('*', cors());
+
+// Body parser
+app.use(express.json());
+
 // Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/employees', employeeRoutes)
-app.use('/api/admin', adminRoutes)
+app.use('/api/employees', employeeRoutes);
+app.use('/api/admin', adminRoutes);
 
-
-const PORT = process.env.PORT || 7002
-
+const PORT = process.env.PORT || 7002;
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-})
+  console.log(`Server running on port ${PORT}`);
+});
