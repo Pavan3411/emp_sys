@@ -39,7 +39,7 @@ const Signup = () => {
     }
 
     try {
-      const res = await axios.post("http://localhost:7001/api/auth/signup", formData);
+      const res = await axios.post("https://emp-sys-server.onrender.com/api/auth/signup", formData);
       alert(res.data.message);
       navigate("/login");
     } catch (error) {
