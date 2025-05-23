@@ -13,6 +13,7 @@ connectDb();
 // ✅ CORS Setup
 const allowedOrigins = [
   'http://localhost:5173',  // Development
+  'http://localhost:5174',  // Development
   'https://emp-sys-client.onrender.com'  // Production
 ];
 
