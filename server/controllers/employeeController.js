@@ -1,10 +1,11 @@
 const User = require('../models/userModel');
+const Employee = require('../models/employeeModel');
 
 // Get all employees (Admin only)
 exports.getEmployees = async (req, res) => {
   try {
-    const employees = await User.find({ role: 'employee' });
-    res.json(employees);
+    const employees = await Employee.find();
+    res.status(200).json(employees);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -14,19 +15,26 @@ exports.getEmployees = async (req, res) => {
 exports.getEmployeeById = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log('Searching for employee with ID:', id);
-    
-    const employee = await User.findById(id);
-    
-    if (!employee) {
-      return res.status(404).json({ message: 'Employee not found' });
+    console.log('Searching for user with ID:', id);
+
+    // Step 1: Find the User by ID
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
     }
 
+    // Step 2: Find the Employee by matching email
+    const employee = await Employee.findOne({ email: user.email });
+    if (!employee) {
+      return res.status(404).json({ message: 'Employee record not found for this user' });
+    }
+
+    // Step 3: Return combined response
     res.json({
       _id: employee._id,
-      name: employee.name,
-      email: employee.email,
-      role: employee.role,
+      name: user.name,
+      email: user.email,
+      role: user.role,
       doj: employee.doj,
       salary: employee.salary,
       experience: employee.experience,
@@ -40,47 +48,10 @@ exports.getEmployeeById = async (req, res) => {
   }
 };
 
-// Get logged-in employee's own profile (Employee only)
-exports.getMyProfile = async (req, res) => {
-  try {
-    console.log('Getting profile for user ID:', req.user.id);
-    console.log('Authenticated user data:', req.user);
-
-    if (!req.user?.id) {
-      return res.status(401).json({ 
-        message: 'Invalid user ID in token',
-        receivedUser: req.user 
-      })
-    }
-    
-    const employee = await User.findById(req.user.id);
-    
-    if (!employee) {
-      return res.status(404).json({ message: 'Employee profile not found' });
-    }
-
-    res.json({
-      _id: employee._id,
-      name: employee.name,
-      email: employee.email,
-      role: employee.role,
-      doj: employee.doj,
-      salary: employee.salary,
-      experience: employee.experience,
-      age: employee.age,
-      department: employee.department,
-      location: employee.location
-    });
-  } catch (err) {
-    console.error('Error in getMyProfile:', err);
-    res.status(500).json({ error: err.message });
-  }
-};
-
 // Create employee (Admin only)
 exports.createEmployee = async (req, res) => {
   try {
-    const employee = new User(req.body);
+    const employee = new Employee(req.body);
     await employee.save();
     res.status(201).json({ message: 'Employee created successfully', employee });
   } catch (err) {
@@ -92,39 +63,13 @@ exports.createEmployee = async (req, res) => {
 exports.updateEmployee = async (req, res) => {
   try {
     const { id } = req.params;
-    const updateData = req.body;
-    
-    // Remove sensitive fields that shouldn't be updated
-    delete updateData.password;
-    delete updateData.role;
-    
-    // Convert numeric fields
-    if (updateData.age) updateData.age = parseInt(updateData.age) || 0;
-    if (updateData.salary) updateData.salary = parseInt(updateData.salary) || 0;
-    if (updateData.experience) updateData.experience = parseInt(updateData.experience) || 0;
-    
-    const employee = await User.findByIdAndUpdate(
-      id,
-      updateData,
-      { new: true, runValidators: true }
-    );
+    const employee = await Employee.findByIdAndUpdate(id, req.body, { new: true, runValidators: true });
     
     if (!employee) {
       return res.status(404).json({ message: 'Employee not found' });
     }
     
-    res.json({
-      _id: employee._id,
-      name: employee.name,
-      email: employee.email,
-      role: employee.role,
-      doj: employee.doj,
-      salary: employee.salary,
-      experience: employee.experience,
-      age: employee.age,
-      department: employee.department,
-      location: employee.location
-    });
+    res.status(200).json({ message: 'Employee updated successfully', employee });
   } catch (err) {
     console.error('Error in updateEmployee:', err);
     res.status(500).json({ error: err.message });
